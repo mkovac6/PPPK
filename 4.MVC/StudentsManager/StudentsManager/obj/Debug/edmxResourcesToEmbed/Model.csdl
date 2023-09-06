@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="Model" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
+  <EntityContainer Name="ModelContainer" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Students" EntityType="Model.Student" />
+    <EntitySet Name="UploadedFiles" EntityType="Model.UploadedFile" />
+    <AssociationSet Name="StudentUploadedFile" Association="Model.StudentUploadedFile">
+      <End Role="Student" EntitySet="Students" />
+      <End Role="UploadedFile" EntitySet="UploadedFiles" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Student">
+    <Key>
+      <PropertyRef Name="IDStudent" />
+    </Key>
+    <Property Name="IDStudent" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Residence" Type="String" Nullable="false" MaxLength="50" />
+    <Property Name="University" Type="String" Nullable="false" MaxLength="100" />
+    <Property Name="Email" Type="String" Nullable="false" MaxLength="100" />
+    <NavigationProperty Name="UploadedFiles" Relationship="Model.StudentUploadedFile" FromRole="Student" ToRole="UploadedFile" />
+  </EntityType>
+  <EntityType Name="UploadedFile">
+    <Key>
+      <PropertyRef Name="IDUploadedFile" />
+    </Key>
+    <Property Name="IDUploadedFile" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="35" />
+    <Property Name="ContentType" Type="String" Nullable="false" MaxLength="20" />
+    <Property Name="Content" Type="Binary" Nullable="false" />
+    <NavigationProperty Name="Student" Relationship="Model.StudentUploadedFile" FromRole="UploadedFile" ToRole="Student" />
+    <Property Name="StudentIDStudent" Type="Int32" Nullable="false" />
+  </EntityType>
+  <Association Name="StudentUploadedFile">
+    <End Type="Model.Student" Role="Student" Multiplicity="1" />
+    <End Type="Model.UploadedFile" Role="UploadedFile" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Student">
+        <PropertyRef Name="IDStudent" />
+      </Principal>
+      <Dependent Role="UploadedFile">
+        <PropertyRef Name="StudentIDStudent" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
