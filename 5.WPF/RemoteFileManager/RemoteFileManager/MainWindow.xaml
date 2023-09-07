@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Remote file storage"
         WindowStartupLocation="CenterScreen"
-        Height="450" Width="800">
+        Height="473" Width="800">
     <Grid Background="{StaticResource GradientBackground}">
         <Label Content="Choose Directory" HorizontalAlignment="Left" Margin="43,57,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.959,0.772"/>
         <ComboBox
@@ -31,14 +31,14 @@
             x:Name="BtnDownload"
             Content="Download"
             Background="Orange"
-            Click="BtnUpload_Click_1"
+            Click="BtnDownload_Click"
              HorizontalAlignment="Left" Height="27" Margin="175,372,0,0" VerticalAlignment="Top" Width="58"/>
         <Button 
             
             x:Name="BtnDelete"
             Content="Delete"
             Background="Red"
-            Click="BtnUpload_Click"
+            Click="BtnDelete_Click"
             HorizontalAlignment="Left" Height="27" Margin="264,372,0,0" VerticalAlignment="Top" Width="56"/>
         <Label Content="Content type" HorizontalAlignment="Left" Margin="415,114,0,0" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Height="26" Margin="521,114,0,0" Text="{Binding Properties.ContentType, Mode=OneWay}" IsReadOnly="True" VerticalAlignment="Top" Width="211"/>
