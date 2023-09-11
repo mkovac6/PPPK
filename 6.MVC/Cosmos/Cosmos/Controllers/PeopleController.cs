@@ -67,18 +67,14 @@ namespace Cosmos.Controllers
 
         // POST: People/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public async Task<ActionResult> Edit([Bind(Include = "Id, Name, JobOccupation, Adult")] Person person)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add update logic here
-
+                await service.UpdatePersonAsync(person);
                 return RedirectToAction("Index");
             }
-            catch
-            {
-                return View();
-            }
+            return View(person);
         }
 
         // GET: People/Delete/5
@@ -89,18 +85,11 @@ namespace Cosmos.Controllers
 
         // POST: People/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection) 
+        public async Task<ActionResult> Delete([Bind(Include = "Id, Name, JobOccupation, Adult")] Person person)
         {
-            try
-            {
-                // TODO: Add delete logic here
+            await service.DeletePersonAsync(person);
+            return RedirectToAction("Index");
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }
