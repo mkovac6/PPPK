@@ -148,7 +148,7 @@ public class Person implements Serializable {
         return "hr.algebra.model.Person[ iDPerson=" + iDPerson + " ]";
     }
 
-    private void updateDetails(Person data) {
+    public void updateDetails(Person data) {
         this.firstName = data.getFirstName();
         this.lastName = data.getLastName();
         this.age = data.getAge();
