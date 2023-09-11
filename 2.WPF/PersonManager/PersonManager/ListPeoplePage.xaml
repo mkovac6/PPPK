@@ -8,7 +8,72 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ListPeoplePage">
 
-    <Grid>
-        
+    <Grid Background="{StaticResource GradientBackground}">
+        <ListView Margin="28,54,26,69" x:Name="LvPeople" AlternationCount="2">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <EventSetter Event="MouseDoubleClick" Handler="BtnEdit_Click"/>
+                    <Setter Property="Background" Value="LightBlue"/>
+                    <Style.Triggers>
+                        <Trigger Property="ListView.AlternationIndex" Value="1">
+                            <Setter Property="Background" Value="White"/>
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="true" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="CadetBlue" />
+                        </MultiTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="126" Header="FirstName" DisplayMemberBinding="{Binding FirstName}" />
+                    <GridViewColumn Width="126" Header="LastName" DisplayMemberBinding="{Binding LastName}" />
+                    <GridViewColumn Width="126" Header="Age" DisplayMemberBinding="{Binding Age}" />
+                    <GridViewColumn Width="126" Header="Email" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Email}" TextDecorations="Underline" Foreground="Black" Cursor="Hand">
+                                    <TextBlock.ToolTip>
+                                        <Image x:Name="Picture" Source="{Binding Image}" Width="60" Height="60" Margin="0,0,5,0" />
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Button 
+        x:Name="BtnEdit"
+        Content="Edit" 
+        HorizontalAlignment="Left" 
+        VerticalAlignment="Top" 
+        Width="75" 
+        Foreground="WhiteSmoke"
+        Background="#13242C"            
+        Click="BtnEdit_Click" RenderTransformOrigin="1.101,3.807" Margin="402,363,0,0"/>
+        <Button 
+        x:Name="BtnDelete"
+        Content="Delete" 
+        HorizontalAlignment="Left" 
+        VerticalAlignment="Top" 
+        Width="75" 
+        Foreground="WhiteSmoke"
+        Background="#FFD41B43"            
+        Click="BtnDelete_Click" RenderTransformOrigin="1.101,3.807" Margin="499,363,0,0"/>
+        <Button 
+        x:Name="BtnAdd"
+        Content="Add" 
+        HorizontalAlignment="Left" 
+        VerticalAlignment="Top" 
+        Width="75" 
+        Foreground="WhiteSmoke"
+        Background="#FF246844"            
+        Click="BtnAdd_Click" RenderTransformOrigin="1.101,3.807" Margin="302,363,0,0"/>
+
     </Grid>
 </local:FramedPage>

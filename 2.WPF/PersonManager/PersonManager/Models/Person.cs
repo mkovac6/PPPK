@@ -20,5 +20,6 @@ namespace PersonManager.Models
         {
             get => ImageUtils.ByteArrayToBitmapImage(Picture);
         }
+
     }
 }

@@ -8,10 +8,9 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Frame
-            NavigationUIVisibility="Hidden"
-            x:Name="Frame"
-            VerticalAlignment="Stretch"
-            HorizontalAlignment="Stretch" />
-        
+        x:Name="Frame"
+        NavigationUIVisibility="Hidden"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"/>
     </Grid>
 </Window>

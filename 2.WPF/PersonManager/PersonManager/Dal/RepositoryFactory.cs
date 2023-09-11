@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace PersonManager.Dal
 {
-    public static class RepositoryFactory
+    static class RepositoryFactory
     {
-        private static readonly Lazy<IRepository> repository
-            = new Lazy<IRepository> (() => new SqlRepository());
+        private static readonly Lazy<IRepository> repository = new Lazy<IRepository>(() => new SqlRepository());
         public static IRepository GetRepository() => repository.Value;
     }
 }

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C856B353-53AF-495D-A04B-9D4A3620969D}</ProjectGuid>
+    <ProjectGuid>{57DC886E-D15D-4D49-ACF7-2B21E4E4070A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>PersonManager</RootNamespace>
     <AssemblyName>PersonManager</AssemblyName>
@@ -56,9 +56,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Dal\IRepository.cs" />
-    <Compile Include="Dal\RepositoryFactory.cs" />
-    <Compile Include="Dal\SqlRepository.cs" />
     <Compile Include="EditPersonPage.xaml.cs">
       <DependentUpon>EditPersonPage.xaml</DependentUpon>
     </Compile>
@@ -66,7 +63,9 @@
     <Compile Include="ListPeoplePage.xaml.cs">
       <DependentUpon>ListPeoplePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\EncryptionUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
+    <Compile Include="Utils\ValidationUtils.cs" />
     <Compile Include="ViewModels\PersonViewModel.cs" />
     <Page Include="EditPersonPage.xaml">
       <SubType>Designer</SubType>
@@ -84,6 +83,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Dal\IRepository.cs" />
+    <Compile Include="Dal\RepositoryFactory.cs" />
+    <Compile Include="Dal\SqlRepository.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -116,12 +118,10 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Resource Include="Assets\back.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Assets\gradient.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
