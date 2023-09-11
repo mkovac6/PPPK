@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<types>
+  <type name="Database engine"/>
+  <type name="Analisys services"/>
+  <type name="Integration services"/>
+  <type name="Reporting services"/>
+  <type name="Azure storage"/>
+</types>

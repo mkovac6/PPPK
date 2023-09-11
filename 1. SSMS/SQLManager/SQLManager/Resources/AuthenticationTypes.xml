@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<types>
+  <type name="SQL Server Authentication"/>
+  <type name="Windows Authentication"/>
+  <type name="Azure"/>
+</types>
