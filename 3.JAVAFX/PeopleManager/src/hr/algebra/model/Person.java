@@ -59,6 +59,10 @@ public class Person implements Serializable {
     public Person() {
     }
 
+        public Person(Person data) {
+            updateDetails(data);
+    }
+    
     public Person(Integer iDPerson) {
         this.iDPerson = iDPerson;
     }
@@ -142,6 +146,14 @@ public class Person implements Serializable {
     @Override
     public String toString() {
         return "hr.algebra.model.Person[ iDPerson=" + iDPerson + " ]";
+    }
+
+    private void updateDetails(Person data) {
+        this.firstName = data.getFirstName();
+        this.lastName = data.getLastName();
+        this.age = data.getAge();
+        this.picture = data.getPicture();
+        
     }
     
 }
