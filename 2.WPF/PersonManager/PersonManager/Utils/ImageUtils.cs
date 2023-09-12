@@ -41,6 +41,13 @@ namespace PersonManager.Utils
             int bufferSize = 1024;
             int currentBytes = 0;
             byte[] buffer = new byte[bufferSize];
+
+            // Check if the column value is null
+            if (dr.IsDBNull(column))
+            {
+                return null; // Return null if the column value is null
+            }
+
             using (var memoryStream = new MemoryStream())
             {
                 using (var binaryWriter = new BinaryWriter(memoryStream))
@@ -56,5 +63,6 @@ namespace PersonManager.Utils
                 }
             }
         }
+
     }
 }
