@@ -6,17 +6,26 @@
 package hr.algebra.controller;
 
 import hr.algebra.dao.RepositoryFactory;
+import hr.algebra.utilities.FileUtils;
+import hr.algebra.utilities.ImageUtils;
+import hr.algebra.utilities.ValidationUtils;
 import hr.algebra.viewmodel.PersonViewModel;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,6 +37,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -103,17 +113,50 @@ public class PeopleController implements Initializable {
     private void delete() {
 
         if (tvPeople.getSelectionModel().getSelectedItem() != null) {
-
+            list.remove(tvPeople.getSelectionModel().getSelectedItem());
         }
-
     }
 
     @FXML
-    private void upload(ActionEvent event) {
+    private void upload() {
+
+        File file = FileUtils.uploadFileDialog(tfAge.getScene().getWindow(), "jpg", "jpeg", "png");
+        if (file != null) {
+            Image image = new Image(file.toURI().toString());
+            String ext = file.getName().substring(file.getName().lastIndexOf("." + 1));
+            try {
+                selectedPersonViewModel.getPerson().setPicture(ImageUtils.imageToByteArray(image, ext));
+                ivPerson.setImage(image);
+            } catch (IOException ex) {
+                Logger.getLogger(PeopleController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     @FXML
-    private void commit(ActionEvent event) {
+    private void commit() {
+
+        if (formValid()) {
+
+            selectedPersonViewModel.getPerson().setFirstName(tfFirstName.getText().trim());
+            selectedPersonViewModel.getPerson().setLastName(tfLastName.getText().trim());
+            selectedPersonViewModel.getPerson().setAge(Integer.valueOf(tfAge.getText().trim()));
+            selectedPersonViewModel.getPerson().setEmail(tfEmail.getText().trim());
+            if (selectedPersonViewModel.getPerson().getIDPerson() == 0) {
+                list.add(selectedPersonViewModel);
+            } else {
+                try {
+                    RepositoryFactory.getRepository().updatePerson(selectedPersonViewModel.getPerson());
+                    tvPeople.refresh();
+                } catch (Exception ex) {
+                    Logger.getLogger(PeopleController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            selectedPersonViewModel = null;
+            tpContent.getSelectionModel().select(tabList);
+            resetForm();
+        }
     }
 
     private void initValidation() {
@@ -157,21 +200,91 @@ public class PeopleController implements Initializable {
 
     }
 
+    private Tab priorTab;
     private void setListeners() {
 
         tpContent.setOnMouseClicked(enent -> {
-            if (tpContent.getSelectionModel().getSelectedItem().equals(tabEdit)) {
+            if (tpContent.getSelectionModel().getSelectedItem().equals(tabEdit) && !tabEdit.equals(priorTab)) {
                 bindPerson(null);
+            }
+            priorTab = tpContent.getSelectionModel().getSelectedItem();
+        });
+
+        list.addListener(new ListChangeListener<PersonViewModel>() {
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends PersonViewModel> change) {
+                if (change.next()) {
+                    if (change.wasRemoved()) {
+
+                        change.getRemoved().forEach(pvm -> {
+
+                            try {
+                                RepositoryFactory.getRepository().deletePerson(pvm.getPerson());
+                            } catch (Exception ex) {
+                                Logger.getLogger(PeopleController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+
+                        });
+
+                    } else if (change.wasAdded()) {
+
+                        change.getAddedSubList().forEach(pvm -> {
+
+                            try {
+                                int idPerson = RepositoryFactory.getRepository().addPerson(pvm.getPerson());
+                                pvm.getPerson().setIDPerson(idPerson);
+                            } catch (Exception ex) {
+                                Logger.getLogger(PeopleController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+
+                        });
+
+                    }
+                }
             }
         });
 
     }
 
     private void bindPerson(PersonViewModel personViewModel) {
+
+        resetForm();
         selectedPersonViewModel = personViewModel != null ? personViewModel : new PersonViewModel(null);
         tfFirstName.setText(selectedPersonViewModel.getFirstNameProperty().get());
         tfLastName.setText(selectedPersonViewModel.getLasttNameProperty().get());
         tfAge.setText(String.valueOf(selectedPersonViewModel.getAgeProperty()));
         tfEmail.setText(selectedPersonViewModel.getEmailProperty().get());
+
+        ivPerson.setImage(
+                selectedPersonViewModel.getPictureProperty().get() != null
+                ? new Image(new ByteArrayInputStream(selectedPersonViewModel.getPictureProperty().get()))
+                : new Image(new File("src/assets/no_image.png").toURI().toString())
+        );
+    }
+
+    private void resetForm() {
+        validationMap.values().forEach(l -> l.setVisible(false));
+        lbIcon.setVisible(false);
+    }
+
+    private boolean formValid() {
+        final AtomicBoolean ok = new AtomicBoolean(true);
+        validationMap.keySet().forEach(tf -> {
+            if (tf.getText().trim().isEmpty()
+                    || tf.getId().contains("Email") && !ValidationUtils.isValidEmail(tf.getText().trim())) {
+                ok.set(false);
+                validationMap.get(tf).setVisible(true);
+            } else {
+                validationMap.get(tf).setVisible(false);
+            }
+        });
+        if (selectedPersonViewModel.getPictureProperty().get() == null) {
+            lbIcon.setVisible(true);
+            ok.set(false);
+        } else {
+            lbIcon.setVisible(false);
+        }
+
+        return ok.get();
     }
 }
