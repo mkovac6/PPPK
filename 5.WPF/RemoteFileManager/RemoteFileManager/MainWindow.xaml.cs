@@ -33,31 +33,11 @@ namespace RemoteFileManager
 
         private void Init()
         {
-            CbDirectories.ItemsSource = itemsViewModel.Directories;
             LbItems.ItemsSource = itemsViewModel.Items;
+            CbDirectories.ItemsSource = itemsViewModel.Directories;
         }
 
-        private void CbDirectories_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                itemsViewModel.Directory = CbDirectories.Text;
-            }
-        }
-
-        private void CbDirectories_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (itemsViewModel.Directories.Contains(CbDirectories.Text))
-            {
-                itemsViewModel.Directory = CbDirectories.Text;
-                CbDirectories.SelectedItem = itemsViewModel.Directory;
-            }
-        }
-
-        private void LbItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DataContext = LbItems.SelectedItem as BlobItem;
-        }
+        private void LbItems_SelectionChanged(object sender, SelectionChangedEventArgs e) => DataContext = LbItems.SelectedItem as BlobItem;
 
         private async void BtnUpload_Click(object sender, RoutedEventArgs e)
         {
@@ -69,30 +49,54 @@ namespace RemoteFileManager
             CbDirectories.Text = itemsViewModel.Directory;
         }
 
-        private async void BtnDownload_Click(object sender, RoutedEventArgs e)
-        {
-            if (!(LbItems.SelectedItems is BlobItem blobItem))
-            {
-                return;
-            }
-            var saveFileDialog = new SaveFileDialog
-            {
-                FileName = blobItem.Name
-            };
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                await itemsViewModel.DownloadAsync(blobItem, saveFileDialog.FileName);
-            }
-        }
-
         private async void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (!(LbItems.SelectedItems is BlobItem blobItem))
+            if (!(LbItems.SelectedItem is BlobItem blobItem))
             {
                 return;
             }
             await itemsViewModel.DeleteAsync(blobItem);
             CbDirectories.Text = itemsViewModel.Directory;
         }
+
+        private async void BtnDownload_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(LbItems.SelectedItem is BlobItem blobItem))
+            {
+                return;
+            }
+            var saveFileDialog = new SaveFileDialog()
+            {
+                FileName = blobItem.Name.Contains(ItemsViewModel.ForwardSlash)
+                ? blobItem.Name.Substring(blobItem.Name.LastIndexOf(ItemsViewModel.ForwardSlash) + 1)
+                : blobItem.Name
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                await itemsViewModel.DownloadAsync(blobItem, saveFileDialog.FileName);
+            }
+            CbDirectories.Text = itemsViewModel.Directory;
+        }
+
+        private void CbDirectories_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                itemsViewModel.Directory = CbDirectories.Text.Trim();
+                CbDirectories.Text = itemsViewModel.Directory;
+            }
+        }
+
+        private void CbDirectories_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (itemsViewModel.Directories.Contains(CbDirectories.Text))
+            {
+                itemsViewModel.Directory = CbDirectories.Text;
+                CbDirectories.SelectedItem = itemsViewModel.Directory;
+
+            }
+        }
+
     }
 }
