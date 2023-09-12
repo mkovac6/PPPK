@@ -183,12 +183,27 @@ class EditFragment : Fragment() {
     }
 
     private fun formValid(): Boolean {
-        val ok = true
+        var ok = true
+        arrayOf(binding.etFirstName, binding.etLastName).forEach {
+            if (it.text.isNullOrEmpty()){
+                it.error = getString(R.string.please)
+                ok = false
+            }
+        }
         return ok && person.picturePath != null
     }
 
     private fun commit() {
-
+        GlobalScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
+                if (person._id == null) {
+                    (context?.applicationContext as App).getPersonDao().insert(person)
+                } else {
+                    (context?.applicationContext as App).getPersonDao().update(person)
+                }
+            }
+            findNavController().navigate(R.id.action_EditFragment_to_ListFragment)
+        }
     }
 
     override fun onDestroyView() {

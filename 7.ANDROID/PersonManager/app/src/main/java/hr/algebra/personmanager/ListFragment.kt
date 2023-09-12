@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), NavigableFragment {
 
     private var _binding: FragmentListBinding? = null
 
@@ -51,19 +51,23 @@ class ListFragment : Fragment() {
             }
             binding.rvPeople.apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                adapter = PersonAdapter(requireContext(), people)
+                adapter = PersonAdapter(requireContext(), people, this@ListFragment)
             }
         }
     }
 
     private fun setupListeners() {
         binding.fbEdit.setOnClickListener {
-            findNavController().navigate(R.id.action_ListFragment_to_EditFragment)
+            findNavController().navigate(R.id.action_EditFragment_to_ListFragment)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun navigate(bundle: Bundle) {
+        findNavController().navigate(R.id.action_EditFragment_to_ListFragment, bundle)
     }
 }
