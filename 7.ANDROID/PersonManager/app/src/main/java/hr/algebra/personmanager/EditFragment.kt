@@ -1,19 +1,49 @@
 package hr.algebra.personmanager
 
+import android.app.Activity
+import android.app.DatePickerDialog
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.squareup.picasso.Picasso
+import hr.algebra.personmanager.dao.Person
 import hr.algebra.personmanager.databinding.FragmentEditBinding
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
+
+const val PERSON_ID = "hr.algebra.personmanager.person_id"
+private const val IMAGE_TYPE = "image/*"
+private const val R_CODE = 1
+
+@Suppress("DEPRECATION")
 class EditFragment : Fragment() {
 
     private var _binding: FragmentEditBinding? = null
+
+    private lateinit var person: Person
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -32,9 +62,133 @@ class EditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSecond.setOnClickListener {
-            findNavController().navigate(R.id.action_EditFragment_to_ListFragment)
+        fetchPerson()
+        setupListeners()
+
+        /*      binding.buttonSecond.setOnClickListener {
+                  findNavController().navigate(R.id.action_EditFragment_to_ListFragment)
+              }*/
+    }
+
+    private fun fetchPerson() {
+        val personId = arguments?.getLong(PERSON_ID)
+        if (personId != null) {
+            GlobalScope.launch(Dispatchers.Main) {
+                person = withContext(Dispatchers.IO) {
+                    (context?.applicationContext as App).getPersonDao().getPerson(personId)
+                        ?: Person()
+                }
+                bindPerson()
+            }
+        } else {
+            person = Person()
+            bindPerson()
         }
+    }
+
+    private fun bindPerson() {
+        binding.etFirstName.setText(person.firstName ?: "")
+        binding.etLastName.setText(person.lastName ?: "")
+        binding.tvDate.text = person.birthDate.format(DateTimeFormatter.ISO_DATE)
+        if (person.picturePath != null) {
+            Picasso.get()
+                .load(File(person.picturePath))
+                .transform(RoundedCornersTransformation(50, 5))
+                .into(binding.ivImage)
+        } else {
+            binding.ivImage.setImageResource(R.mipmap.ic_launcher)
+        }
+    }
+
+    private fun setupListeners() {
+        binding.tvDate.setOnClickListener {
+            handleDate()
+        }
+        binding.ivImage.setOnLongClickListener {
+            handleImage()
+            true
+        }
+        binding.btnCommit.setOnClickListener {
+            if (formValid()) {
+                commit()
+            }
+        }
+        binding.etFirstName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+                person.firstName = text?.toString()?.trim()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
+        binding.etLastName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+                person.lastName = text?.toString()?.trim()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
+    }
+
+    private fun handleDate() {
+        DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                person.birthDate = LocalDate.of(year, month + 1, dayOfMonth)
+                bindPerson()
+            },
+            person.birthDate.year,
+            person.birthDate.monthValue - 1,
+            person.birthDate.dayOfMonth
+        ).show()
+    }
+
+    private fun handleImage() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = IMAGE_TYPE
+        }
+        startActivityForResult(Intent.createChooser(intent, null), R_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == R_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            val dir = context?.applicationContext?.getExternalFilesDir(null)
+            val file = File(dir, File.separator.toString() + UUID.randomUUID().toString() + ".jpg")
+            context?.contentResolver?.openInputStream(data.data as Uri).use { inputStream ->
+                FileOutputStream(file).use { fos ->
+                    val bitmap = BitmapFactory.decodeStream(inputStream)
+                    val bos = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+                    fos.write(bos.toByteArray())
+                    person.picturePath = file.absolutePath
+                    bindPerson()
+                }
+            }
+        }
+    }
+
+    private fun formValid(): Boolean {
+        val ok = true
+        return ok && person.picturePath != null
+    }
+
+    private fun commit() {
+
     }
 
     override fun onDestroyView() {
