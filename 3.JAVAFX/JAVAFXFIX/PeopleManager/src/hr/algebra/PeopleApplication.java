@@ -5,6 +5,7 @@
  */
 package hr.algebra;
 
+import hr.algebra.dao.RepositoryFactory;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -21,13 +22,13 @@ import javafx.stage.Stage;
  * @author marko
  */
 public class PeopleApplication extends Application {
-    
+
     @Override
     public void start(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("view/People.fxml"));
-        
+
         Scene scene = new Scene(root, 600, 400);
-        
+
         primaryStage.setTitle("People manager");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -39,5 +40,11 @@ public class PeopleApplication extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
+
+    @Override
+    public void stop() throws Exception {
+        RepositoryFactory.getRepository().release();
+        super.stop(); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

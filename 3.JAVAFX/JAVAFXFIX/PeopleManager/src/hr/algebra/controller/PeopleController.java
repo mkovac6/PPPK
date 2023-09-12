@@ -8,10 +8,14 @@ package hr.algebra.controller;
 import hr.algebra.dao.RepositoryFactory;
 import hr.algebra.viewmodel.PersonViewModel;
 import java.net.URL;
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,7 +27,9 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.ImageView;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * FXML Controller class
@@ -33,11 +39,11 @@ import javafx.scene.image.ImageView;
 public class PeopleController implements Initializable {
 
     private Map<TextField, Label> validationMap;
-    
+
     private final ObservableList<PersonViewModel> list = FXCollections.observableArrayList();
-    
+
     private PersonViewModel selectedPersonViewModel;
-    
+
     @FXML
     private TabPane tpContent;
     @FXML
@@ -81,14 +87,25 @@ public class PeopleController implements Initializable {
         initTable();
         addIntegerMask(tfAge);
         setListeners();
-    }    
-
-    @FXML
-    private void edit(ActionEvent event) {
     }
 
     @FXML
-    private void delete(ActionEvent event) {
+    private void edit() {
+
+        if (tvPeople.getSelectionModel().getSelectedItem() != null) {
+            bindPerson(tvPeople.getSelectionModel().getSelectedItem());
+            tpContent.getSelectionModel().select(tabEdit);
+        }
+
+    }
+
+    @FXML
+    private void delete() {
+
+        if (tvPeople.getSelectionModel().getSelectedItem() != null) {
+
+        }
+
     }
 
     @FXML
@@ -100,7 +117,14 @@ public class PeopleController implements Initializable {
     }
 
     private void initValidation() {
-        
+
+        validationMap = Stream.of(
+                new AbstractMap.SimpleImmutableEntry<>(tfFirstName, lbFirstName),
+                new AbstractMap.SimpleImmutableEntry<>(tfLastName, lbLastName),
+                new AbstractMap.SimpleImmutableEntry<>(tfAge, lbAge),
+                new AbstractMap.SimpleImmutableEntry<>(tfEmail, lbEmail)
+        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
     }
 
     private void initPeople() {
@@ -119,12 +143,35 @@ public class PeopleController implements Initializable {
         tvPeople.setItems(list);
     }
 
-    private void addIntegerMask(TextField tfAge) {
-        
+    private void addIntegerMask(TextField tf) {
+
+        UnaryOperator<TextFormatter.Change> filter = change -> {
+
+            String input = change.getText();
+            if (input.matches("\\d*")) {
+                return change;
+            }
+            return null;
+        };
+        tf.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, filter));
+
     }
 
     private void setListeners() {
-        
+
+        tpContent.setOnMouseClicked(enent -> {
+            if (tpContent.getSelectionModel().getSelectedItem().equals(tabEdit)) {
+                bindPerson(null);
+            }
+        });
+
     }
-    
+
+    private void bindPerson(PersonViewModel personViewModel) {
+        selectedPersonViewModel = personViewModel != null ? personViewModel : new PersonViewModel(null);
+        tfFirstName.setText(selectedPersonViewModel.getFirstNameProperty().get());
+        tfLastName.setText(selectedPersonViewModel.getLasttNameProperty().get());
+        tfAge.setText(String.valueOf(selectedPersonViewModel.getAgeProperty()));
+        tfEmail.setText(selectedPersonViewModel.getEmailProperty().get());
+    }
 }
