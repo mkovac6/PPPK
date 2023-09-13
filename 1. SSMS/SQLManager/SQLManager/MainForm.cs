@@ -63,7 +63,6 @@ namespace SQLManager
 
             var centerFormat = new StringFormat()
             {
-                // right alignment might actually make more sense for numbers
                 Alignment = StringAlignment.Center,
                 LineAlignment = StringAlignment.Center
             };

@@ -26,3 +26,17 @@ C:\Users\marko\Downloads\PPPK-blazevic\01\SQLManager\SQLManager\obj\Debug\SQLMan
 C:\Users\marko\Downloads\PPPK-blazevic\01\SQLManager\SQLManager\obj\Debug\SQLManager.csproj.CopyComplete
 C:\Users\marko\Downloads\PPPK-blazevic\01\SQLManager\SQLManager\obj\Debug\SQLManager.exe
 C:\Users\marko\Downloads\PPPK-blazevic\01\SQLManager\SQLManager\obj\Debug\SQLManager.pdb
+D:\PPPK\1. SSMS\SQLManager\SQLManager\bin\Debug\SQLManager.exe.config
+D:\PPPK\1. SSMS\SQLManager\SQLManager\bin\Debug\SQLManager.exe
+D:\PPPK\1. SSMS\SQLManager\SQLManager\bin\Debug\SQLManager.pdb
+D:\PPPK\1. SSMS\SQLManager\SQLManager\bin\Debug\TSQL_Parser.dll
+D:\PPPK\1. SSMS\SQLManager\SQLManager\bin\Debug\TSQL_Parser.xml
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.csproj.AssemblyReference.cache
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.LoginForm.resources
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.MainForm.resources
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.Properties.Resources.resources
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.csproj.GenerateResource.cache
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.csproj.CoreCompileInputs.cache
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.csproj.CopyComplete
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.exe
+D:\PPPK\1. SSMS\SQLManager\SQLManager\obj\Debug\SQLManager.pdb
